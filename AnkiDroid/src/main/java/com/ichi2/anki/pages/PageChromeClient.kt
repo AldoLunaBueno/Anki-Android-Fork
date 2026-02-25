@@ -17,6 +17,7 @@ package com.ichi2.anki.pages
 
 import android.view.WindowManager
 import android.webkit.JsResult
+import android.webkit.PermissionRequest
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.appcompat.app.AlertDialog
@@ -76,5 +77,15 @@ open class PageChromeClient : WebChromeClient() {
             return false // unhandled - shown in WebView
         }
         return true
+    }
+
+    override fun onPermissionRequest(request: PermissionRequest) {
+        if (PermissionRequest.RESOURCE_AUDIO_CAPTURE in request.resources) {
+            Timber.i("Granting audio capture permission to WebView")
+            request.grant(arrayOf(PermissionRequest.RESOURCE_AUDIO_CAPTURE))
+        } else {
+            Timber.i("Denying permissions to WebView")
+            request.deny()
+        }
     }
 }
