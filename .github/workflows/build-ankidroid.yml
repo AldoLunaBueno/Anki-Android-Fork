@@ -23,9 +23,9 @@ jobs:
       - name: Grant Execute Permission for Gradlew
         run: chmod +x gradlew
 
-      - name: Build Debug APK
-        # AnkiDroid tiene varios "flavors" (play, amazon, full). "assembleDebug" compila el default.
-        run: ./gradlew assembleDebug --stacktrace
+      - name: Build Play Debug APK (Optimized Memory)
+        # Compila SOLO la versión Play Store y asigna 4GB de RAM a Java y Kotlin
+        run: ./gradlew assemblePlayDebug --stacktrace -Dorg.gradle.jvmargs="-Xmx4g" -Dkotlin.daemon.jvmargs="-Xmx4g"
 
       - name: Create Dynamic Release Tag
         id: tagger
@@ -36,7 +36,7 @@ jobs:
         with:
           tag_name: ${{ env.TAG_NAME }}
           name: "Actualización AnkiDroid Fork - ${{ env.TAG_NAME }}"
-          body: "Auto-build de la rama feat/mic-permission con permisos de micrófono habilitados para JS local."
+          body: "Auto-build optimizado de la rama feat/mic-permission con permisos de micrófono."
           files: |
             app/build/outputs/apk/*/debug/*.apk
         env:
