@@ -1,0 +1,43 @@
+name: Build and Release AnkiDroid Fork
+
+on:
+  push:
+    branches:
+      - feat/mic-permission # Se activa solo para la rama con la modificación
+
+jobs:
+  build:
+    name: Build APK and Create Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17' # AnkiDroid moderno usa Java 17
+          distribution: 'temurin'
+
+      - name: Grant Execute Permission for Gradlew
+        run: chmod +x gradlew
+
+      - name: Build Debug APK
+        # AnkiDroid tiene varios "flavors" (play, amazon, full). "assembleDebug" compila el default.
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Create Dynamic Release Tag
+        id: tagger
+        run: echo "TAG_NAME=fork-build-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+
+      - name: Upload Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          name: "Actualización AnkiDroid Fork - ${{ env.TAG_NAME }}"
+          body: "Auto-build de la rama feat/mic-permission con permisos de micrófono habilitados para JS local."
+          files: |
+            app/build/outputs/apk/*/debug/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
