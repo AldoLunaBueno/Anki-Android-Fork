@@ -38,6 +38,6 @@ jobs:
           name: "Actualización AnkiDroid Fork - ${{ env.TAG_NAME }}"
           body: "Auto-build optimizado de la rama feat/mic-permission con permisos de micrófono."
           files: |
-            app/build/outputs/apk/*/debug/*.apk
+            AnkiDroid/build/outputs/apk/*/debug/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
